@@ -1,5 +1,8 @@
 package fun;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.StringTokenizer;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -47,11 +50,53 @@ public class SleepSort {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		ExecutorService e = Executors.newCachedThreadPool();
 	}
 
 	public static String sort(String input) {
-		// TODO Auto-generated method stub
-		return null;
+		ExecutorService e = Executors.newCachedThreadPool();
+		List<Thread> threads = new ArrayList<Thread>();
+		StringTokenizer st = new StringTokenizer(input);
+		final StringBuilder sb = new StringBuilder();
+		while (st.hasMoreTokens()) {
+			final String token = st.nextToken();
+			SleeperThread t = new SleeperThread(token, sb);
+			threads.add(t);
+			t.start();
+		}
+		int running = 0;
+		do {
+			running = 0;
+			for (Thread thread : threads) {
+				if (thread.isAlive()) {
+					running++;
+				}
+			}
+//			System.out.println("We have " + running + " running threads. ");
+		} while (running > 0);
+
+		return sb.toString();
+	}
+
+	protected static class SleeperThread extends Thread {
+		private long millis;
+		private String token;
+		private StringBuilder response;
+		public SleeperThread(String token, StringBuilder responseBuffer) {
+			millis = Long.parseLong(token);
+			this.token = token;
+			response = responseBuffer;
+		}
+
+		@Override
+		public void run() {
+			try {
+				Thread.sleep(millis * 100);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			response.append(token + " ");
+		}
+
 	}
 }
