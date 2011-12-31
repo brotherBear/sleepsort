@@ -90,7 +90,7 @@ public class SleepSort {
 		@Override
 		public void run() {
 			try {
-				Thread.sleep(millis * 100);
+				Thread.sleep(millis );
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
