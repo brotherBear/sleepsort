@@ -56,10 +56,11 @@ public class SleepSort {
 		ExecutorService e = Executors.newCachedThreadPool();
 		List<Thread> threads = new ArrayList<Thread>();
 		StringTokenizer st = new StringTokenizer(input);
+		int countTokens = st.countTokens();
 		final StringBuilder sb = new StringBuilder();
 		while (st.hasMoreTokens()) {
 			final String token = st.nextToken();
-			SleeperThread t = new SleeperThread(token, sb);
+			SleeperThread t = new SleeperThread(token, sb, countTokens);
 			threads.add(t);
 			t.start();
 		}
@@ -81,16 +82,20 @@ public class SleepSort {
 		private long millis;
 		private String token;
 		private StringBuilder response;
-		public SleeperThread(String token, StringBuilder responseBuffer) {
+		private int factor;
+		public SleeperThread(String token, StringBuilder responseBuffer, int numberOfTokens) {
 			millis = Long.parseLong(token);
 			this.token = token;
 			response = responseBuffer;
+			factor = numberOfTokens > 8 ? numberOfTokens / 8 : 1;
 		}
 
 		@Override
 		public void run() {
 			try {
-				Thread.sleep(millis );
+				long delay = millis < 10 ? millis * factor: millis;
+				Thread.sleep(delay);
+				System.out.println("Sleeping for " + delay +" before adding " + token);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
