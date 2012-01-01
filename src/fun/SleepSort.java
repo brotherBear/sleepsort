@@ -57,12 +57,16 @@ public class SleepSort {
 		List<Thread> threads = new ArrayList<Thread>();
 		StringTokenizer st = new StringTokenizer(input);
 		int countTokens = st.countTokens();
+		long startTime = System.currentTimeMillis();
 		final StringBuilder sb = new StringBuilder();
+		int count = 0;
 		while (st.hasMoreTokens()) {
 			final String token = st.nextToken();
-			SleeperThread t = new SleeperThread(token, sb, countTokens);
+			SleeperThread t = new SleeperThread(token, sb, countTokens, count++);
 			threads.add(t);
-			t.start();
+		}
+		for (Thread thread : threads) {
+			thread.start();
 		}
 		int running = 0;
 		do {
@@ -72,35 +76,53 @@ public class SleepSort {
 					running++;
 				}
 			}
-//			System.out.println("We have " + running + " running threads. ");
+			// System.out.println("We have " + running + " running threads. ");
 		} while (running > 0);
-
+		long stopTime = System.currentTimeMillis();
+		System.out.println("Sorted " + countTokens + " elements in "
+				+ (stopTime - startTime) / 1000 + " seconds");
 		return sb.toString();
 	}
 
 	protected static class SleeperThread extends Thread {
 		private long millis;
 		private String token;
+		private int sequenceNumber;
 		private StringBuilder response;
-		private int factor;
-		public SleeperThread(String token, StringBuilder responseBuffer, int numberOfTokens) {
+		private int numberOfTokens;
+
+		public SleeperThread(String token, StringBuilder responseBuffer,
+				int numberOfTokens, int sequenceNumber) {
 			millis = Long.parseLong(token);
 			this.token = token;
 			response = responseBuffer;
-			factor = numberOfTokens > 8 ? numberOfTokens / 8 : 1;
+			this.sequenceNumber = sequenceNumber;
+			this.numberOfTokens = numberOfTokens;
 		}
 
 		@Override
 		public void run() {
 			try {
-				long delay = millis < 10 ? millis * factor: millis;
+				long delay = calculateDelay();
+				System.out.println("Sleeping for " + delay + " before adding "
+						+ token);
 				Thread.sleep(delay);
-				System.out.println("Sleeping for " + delay +" before adding " + token);
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			response.append(token + " ");
+		}
+
+		private long calculateDelay() {
+			double delay = millis * 10;
+//			if (millis < numberOfTokens/2) {
+//				delay = numberOfTokens + millis
+//						* (2 * numberOfTokens - sequenceNumber)
+//						/ numberOfTokens;
+//			} else {
+//				delay = numberOfTokens + millis;
+//			}
+			return (long) delay;
 		}
 
 	}
