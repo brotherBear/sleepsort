@@ -57,7 +57,7 @@ public class SleepSort {
 
 	public static String sort(String input) {
 		ExecutorService executor = Executors.newCachedThreadPool();
-		List<Callable<String>> runnables = new ArrayList<Callable<String>>();
+		List<Callable<String>> callables = new ArrayList<Callable<String>>();
 		List<Future<String>> responseList = new ArrayList<Future<String>>();
 		StringTokenizer st = new StringTokenizer(input);
 		int countTokens = st.countTokens();
@@ -67,10 +67,10 @@ public class SleepSort {
 		while (st.hasMoreTokens()) {
 			final String token = st.nextToken();
 			SleeperThread t = new SleeperThread(token);
-			runnables.add(t);
+			callables.add(t);
 		}
 		// Start the threads
-		for (Callable<String> job : runnables) {
+		for (Callable<String> job : callables) {
 			responseList.add(executor.submit(job));
 		}
 		while (!responseList.isEmpty()) {
